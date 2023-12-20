@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <permission
+        android:name="${applicationId}.permission.RESTART_APP"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="${applicationId}.permission.RESTART_APP" />
+    <application>
+        <activity
+            android:name="cn.hacktons.zygote.App$Zygote"
+            android:exported="false"
+            android:process=":zygote"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+    </application>
+</manifest>
