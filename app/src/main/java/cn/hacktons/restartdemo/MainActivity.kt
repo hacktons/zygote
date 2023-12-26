@@ -53,9 +53,16 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
                 onDismissRequest = { openAlertDialog.value = false },
                 onConfirmation = {
                     openAlertDialog.value = false
-                    App.restart(ctx)
+                    App.restart(ctx, target = CustomRestartActivity::class.java) {
+                        Log.i(
+                            "Clean",
+                            "do some clean task, such as flush pending log request"
+                        )
+                        Process.killProcess(Process.myPid())
+                    }
                 },
-                dialogText = "Your app will be restart now, click OK to confirm!")
+                dialogText = "Your app will be restart now, click OK to confirm!"
+            )
         }
 
         !openAlertDialog.value -> {
