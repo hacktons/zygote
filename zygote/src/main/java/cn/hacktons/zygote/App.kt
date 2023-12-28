@@ -24,7 +24,8 @@ object App {
     private val TAG = Zygote::class.java.simpleName
     private const val DEFAULT_DELAY_KILL_SECONDS = 3
     private const val KEY_DELAY = "__zygote_delay__"
-    private const val KEY_RESTART = "__zygote_restart__"
+    const val KEY_RESTART = "__zygote_restart__"
+    const val KEY_SOURCE = "__zygote_source__"
     /**
      * Start a sub-process to kill main process and handle the `kill` yourself
      *
@@ -37,25 +38,26 @@ object App {
      * Start a sub-process to kill main process
      */
     @JvmOverloads
+    @JvmStatic
     fun restart(
         ctx: Context,
-        target: Class<out Zygote?>? = Zygote::class.java,
+        target: Class<out Zygote> = Zygote::class.java,
         delay: Int = DEFAULT_DELAY_KILL_SECONDS,
-        listener: () -> Unit = {
-            Process.killProcess(Process.myPid())
+        listener: OnKillListener = {
+            Process.killProcess(Process.myPid());
         }
     ) {
         val context = ctx.applicationContext
         val receiver: BroadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
-                Log.d(TAG, "kill self")
+                Log.d(TAG, "kill main process:" + Process.myPid())
+                context.unregisterReceiver(this)
                 setResult(Activity.RESULT_OK, "", null)
                 listener.invoke()
-                context.unregisterReceiver(this)
             }
         }
-        val action = action(ctx)
-        val permission = permission(ctx)
+        val action = action(context)
+        val permission = permission(context)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             context.registerReceiver(
                 receiver,
@@ -89,7 +91,7 @@ object App {
             super.onCreate(savedInstanceState)
             Log.d(TAG, "pid=" + Process.myPid() + ", ")
             setContent()
-            startMainProcessThenSelfExit(this)
+            startLauncherIntentAndSelfExit(this)
         }
 
         /**
@@ -103,13 +105,14 @@ object App {
          * @return true allow the sub-process to be killed, otherwise sub-process is kept
          */
         protected open fun onKillSubProcessSelf() {
+            Log.d(TAG, "kill sub-process: " + Process.myPid())
             Process.killProcess(Process.myPid())
         }
 
         /**
          * Notify the main process to exit then launch main activity in a new main process.
          */
-        private fun startMainProcessThenSelfExit(context: Context) {
+        private fun startLauncherIntentAndSelfExit(context: Context) {
             val ctx = context.applicationContext
             val permission = String.format(permission(ctx), ctx.packageName)
             ctx.sendOrderedBroadcast(Intent(action(ctx)), permission, object : BroadcastReceiver() {
@@ -138,7 +141,13 @@ object App {
             val mainIntent = Intent.makeRestartActivityTask(componentName)
             mainIntent.setPackage(context.packageName)
             mainIntent.putExtra(KEY_RESTART, true)
+            mainIntent.putExtra(KEY_SOURCE, javaClass.simpleName + "#pid(" + Process.myPid() + ")")
             context.startActivity(mainIntent)
         }
     }
 }
+/**
+ * Kill listener.
+ * Clear resource, submit any pending requests before kill process
+ */
+typealias OnKillListener = () -> Unit

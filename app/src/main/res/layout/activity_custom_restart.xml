@@ -10,9 +10,15 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/round_shape"
         android:gravity="center"
-        android:text="Custom restart page\nLoading..."
+        android:padding="8dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:text="Custom loading page"
         android:textColor="@android:color/holo_purple"
-        android:textSize="24sp" />
+        android:textSize="32sp"
+        android:textStyle="bold" />
 </FrameLayout>

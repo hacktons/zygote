@@ -9,7 +9,6 @@
         <activity
             android:name="cn.hacktons.zygote.App$Zygote"
             android:exported="false"
-            android:process=":zygote"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+            android:process=":zygote" />
     </application>
 </manifest>

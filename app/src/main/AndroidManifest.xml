@@ -14,10 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.RestartDemo"
         tools:targetApi="31">
-        <activity
-            android:name=".CustomRestartActivity"
-            android:exported="false"
-            android:process=":zygote" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -29,6 +26,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!-- use same style with launcher activity-->
+        <activity
+            android:name="cn.hacktons.zygote.App$Zygote"
+            android:process=":zygote"
+            android:theme="@style/Theme.RestartDemo"
+            tools:replace="android:theme" />
     </application>
 
 </manifest>
