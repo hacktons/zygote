@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+##################################################################
+##
+##  Add script description here
+##
+##
+##  Author: Chaobin Wu
+##  Email : chaobinwu89@gmail.com
+##
+#################################################################
+./gradlew :zygote:publish
