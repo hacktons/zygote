@@ -19,7 +19,7 @@ repositories {
 }
 
 dependencies {
-    implementation("cn.hacktons:zygote")
+    implementation("cn.hacktons:zygote:1.0.0")
 }
 ```
 
