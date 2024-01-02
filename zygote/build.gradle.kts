@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
@@ -42,18 +45,43 @@ android {
 
 }
 
-publishing {
-    publications {
-        register<MavenPublication>("release") {
-            groupId = "cn.hacktons"
-            artifactId = "zygote"
-            version = "1.0.0-SNAPSHOT"
-            afterEvaluate {
-                from(components["release"])
+afterEvaluate {
+    fun loadLocalProperties(): Properties {
+        val properties = Properties()
+        val localPropertiesFile = rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            properties.load(FileInputStream(localPropertiesFile))
+        }
+        return properties
+    }
+
+    val localProperties = loadLocalProperties()
+    fun getProperty(key: String): String {
+        return findProperty(key)?.toString() ?: localProperties.getProperty(key)
+        ?: error("Failed to find property for $key")
+    }
+    publishing {
+        repositories {
+            maven {
+                name = "GitHubPackages"
+                url = uri("https://maven.pkg.github.com/hacktons/zygote")
+                credentials {
+                    username = getProperty("gpr.user")
+                    password = getProperty("gpr.key")
+                }
+            }
+        }
+        publications {
+            create<MavenPublication>("release") {
+                from(components.getByName("release"))
+                groupId = getProperty("GROUP")
+                artifactId = getProperty("ARTIFACT")
+                version = getProperty("VERSION")
             }
         }
     }
 }
+
 dependencies {
 //    implementation("androidx.core:core-ktx:1.9.0")
 //    implementation("androidx.appcompat:appcompat:1.6.1")

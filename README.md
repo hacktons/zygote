@@ -10,6 +10,19 @@ Restart your application programmatically, compact for Android 10(API level 29)
 
 ## How to use
 
+Add maven repo and library dependency:
+```groovy
+repositories {
+    maven {
+        url = uri("https://maven.pkg.github.com/hacktons/zygote")
+    }
+}
+
+dependencies {
+    implementation("cn.hacktons:zygote:1.0.0")
+}
+```
+
 Kill process directly:
 
 ```kotlin
